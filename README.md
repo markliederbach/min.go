@@ -1,1 +1,1 @@
-# ming.go
+# min.go
