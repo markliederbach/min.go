@@ -40,7 +40,7 @@ func initDb() *gorm.DB {
 		slog.Error("failed to connect database", "error", err)
 		panic("failed to connect database")
 	}
-	db.AutoMigrate(&client.EventInfo{}, &client.FixtureInfo{})
+	db.AutoMigrate(&client.DatabaseFixture{})
 	return db
 }
 
@@ -56,6 +56,7 @@ func main() {
 		Commands: []*cli.Command{
 			command.NewMatchCommand(db).ToCliCommand(),
 			command.NewRefreshThreadsTokenCommand().ToCliCommand(),
+			command.NewFixtureSyncerCommand(db).ToCliCommand(),
 		},
 	}
 	if err := cmd.Run(context.Background(), os.Args); err != nil {

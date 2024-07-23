@@ -208,3 +208,21 @@ type RefreshTokenResponse struct {
 	TokenType   string `json:"token_type"`
 	ExpiresIn   int    `json:"expires_in"`
 }
+
+type DatabaseFixture struct {
+	ID           int       `gorm:"primaryKey" json:"id"`
+	UpdatedAt    time.Time `gorm:"autoUpdateTime" json:"updated_at"`
+	Date         time.Time `json:"date"`
+	Timezone     string    `json:"timezone"`
+	Status       string    `json:"status"`
+	Elapsed      int       `json:"elapsed"`
+	LeagueID     int       `json:"league_id"`
+	LeagueName   string    `json:"league_name"`
+	HomeTeamID   int       `json:"home_team_id"`
+	AwayTeamID   int       `json:"away_team_id"`
+	HomeTeamName string    `json:"home_team_name"`
+	AwayTeamName string    `json:"away_team_name"`
+	HomeScore    int       `json:"home_score"`
+	AwayScore    int       `json:"away_score"`
+	NotifyState  string    `json:"notify_state"`
+}
