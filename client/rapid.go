@@ -43,13 +43,11 @@ func (r *RapidClientImpl) GetSeasonTeams(ctx context.Context, year string) ([]Te
 
 func (r *RapidClientImpl) GetFixturesByStatus(ctx context.Context, status RapidFixtureStatus) ([]FixtureInfo, error) {
 	params := url.Values{}
-	// params.Set("live", "all")
-	// params.Set("team", "274")
 	params.Set("status", string(status))
 	params.Set("season", time.Now().Format("2006"))
 	params.Set("date", time.Now().Format("2006-01-02"))
-	params.Set("league", r.Options.LeagueId)
-	params.Set("team", r.Options.TeamId)
+	// params.Set("league", r.Options.LeagueId)
+	// params.Set("team", r.Options.TeamId)
 
 	resp, err := r.call(ctx, http.MethodGet, "/fixtures", params)
 	if err != nil {

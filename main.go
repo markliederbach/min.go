@@ -57,6 +57,7 @@ func main() {
 			command.NewMatchCommand(db).ToCliCommand(),
 			command.NewRefreshThreadsTokenCommand().ToCliCommand(),
 			command.NewFixtureSyncerCommand(db).ToCliCommand(),
+			command.NewMatchNotifyCommand().ToCliCommand(),
 		},
 	}
 	if err := cmd.Run(context.Background(), os.Args); err != nil {

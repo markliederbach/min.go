@@ -22,7 +22,11 @@ const (
 )
 
 const (
-	DBFixtureNotifyStateNew = "NEW"
+	DBFixtureNotifyStateNew      = "NEW"
+	DBFixtureNotifyStateKickoff  = "KICKOFF"
+	DBFixtureNotifyStateHalftime = "HALFTIME"
+	DBFixtureNotifyStateSecond   = "SECOND"
+	DBFixtureNotifyStateFulltime = "FULLTIME"
 )
 
 type FixtureSyncerCommand struct {
@@ -118,9 +122,9 @@ func (f *FixtureSyncerCommand) ToCliCommand() *cli.Command {
 						Name:        "schedule",
 						Usage:       "Cron schedule",
 						Required:    false,
-						Value:       "*/1 * * * *",
-						DefaultText: "*/1 * * * *",
-						Sources:     cli.EnvVars("CRON_SCHEDULE"),
+						Value:       "*/2 * * * *",
+						DefaultText: "*/2 * * * *",
+						Sources:     cli.EnvVars("CRON_FIXTURE_SCHEDULE"),
 					},
 				},
 				Action: func(ctx context.Context, c *cli.Command) error {
@@ -136,6 +140,7 @@ func (f *FixtureSyncerCommand) ToCliCommand() *cli.Command {
 					_, err = scheduler.NewJob(
 						gocron.CronJob(schedule, false),
 						gocron.NewTask(runOnce, ctx, args),
+						gocron.WithSingletonMode(gocron.LimitModeReschedule),
 					)
 					if err != nil {
 						return err

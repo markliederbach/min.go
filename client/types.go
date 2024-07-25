@@ -12,8 +12,9 @@ const (
 	RapidFixtureStatusKickoff    RapidFixtureStatus = "1H"
 	RapidFixtureStatusHalftime   RapidFixtureStatus = "HT"
 	RapidFixtureStatusSecond     RapidFixtureStatus = "2H"
+	RapidFixtureStatusFulltime   RapidFixtureStatus = "FT"
 	RapidFixtureStatusInProgress RapidFixtureStatus = "1H-HT-2H"
-	RapidFixtureStatusFulltime   RapidFixtureStatus = "FT-AET-PEN"
+	RapidFixtureStatusFinished   RapidFixtureStatus = "FT-AET-PEN"
 	RapidFixtureStatusAllRecent  RapidFixtureStatus = "1H-HT-2H-FT-AET-PEN"
 )
 

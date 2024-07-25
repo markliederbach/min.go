@@ -153,24 +153,6 @@ func (m *MatchCommand) ToCliCommand() *cli.Command {
 			slog.InfoContext(ctx, "running match command")
 			args := NewMatchCommandArgs(c)
 
-			// threadsClient, err := client.NewThreadsClient(
-			// 	ctx,
-			// 	client.ThreadsClientOptions{
-			// 		APIKey:   args.ThreadsApiKey,
-			// 		BaseUrl:  args.ThreadsBaseUrl,
-			// 		Username: args.ThreadsUsername,
-			// 	},
-			// )
-			// if err != nil {
-			// 	return err
-			// }
-
-			// postResponse, err := threadsClient.CreateTextPost(ctx, "This is a test\n#HelloWorld")
-			// _, err = threadsClient.GetUserId(ctx)
-			// if err != nil {
-			// 	return err
-			// }
-
 			rapidClient, err := client.NewRapidClient(
 				ctx,
 				client.RapidClientOptions{
@@ -206,64 +188,9 @@ func (m *MatchCommand) ToCliCommand() *cli.Command {
 				return errors.New("no in-progress fixtures found")
 			}
 
-			fixtureCategories, err := m.categorizeFixtures(ctx, recentFixtures, args.KickoffThreshold)
-			if err != nil {
-				return err
-			}
-
-			for _, fixture := range fixtureCategories.Kickoff {
-				slog.InfoContext(ctx, "new fixture", "fixture", fixture)
-			}
-
 			return nil
 		},
 	}
-}
-
-func (m *MatchCommand) categorizeFixtures(ctx context.Context, fixtures []client.FixtureInfo, kickoffThreshold int) (FixtureCategories, error) {
-	fixtureCategories := FixtureCategories{}
-
-	for _, fixture := range fixtures {
-		fixtureRecord := client.FixtureInfo{}
-		err := m.DB.Where("id = ?", fixture.Fixture.ID).First(&fixtureRecord).Error
-		if err != nil {
-			if !errors.Is(err, gorm.ErrRecordNotFound) {
-				slog.ErrorContext(ctx, "error querying for fixture", err)
-				return FixtureCategories{}, err
-			}
-			// Add new fixture to DB
-			slog.InfoContext(ctx, "fixture does not exist, creating")
-			err := m.DB.Create(&fixture).Error
-			if err != nil {
-				return FixtureCategories{}, err
-			}
-			if fixture.Fixture.Status.Short == string(client.RapidFixtureStatusKickoff) && fixture.Fixture.Status.Elapsed <= kickoffThreshold {
-				fixtureCategories.Kickoff = append(fixtureCategories.Kickoff, fixture)
-				continue
-			}
-		} else {
-			// if fixture status changed to halftime or fulltime, update the record and categorize it
-			if fixture.Fixture.Status.Short != fixtureRecord.Fixture.Status.Short {
-				switch fixture.Fixture.Status.Short {
-				case string(client.RapidFixtureStatusHalftime):
-					fixtureCategories.Halftime = append(fixtureCategories.Halftime, fixture)
-				case string(client.RapidFixtureStatusSecond):
-					if fixture.Fixture.Status.Elapsed <= (45 + kickoffThreshold) {
-						fixtureCategories.SecondHalf = append(fixtureCategories.SecondHalf, fixture)
-					}
-				case string(client.RapidFixtureStatusFulltime):
-					fixtureCategories.Fulltime = append(fixtureCategories.Fulltime, fixture)
-				}
-			}
-
-			slog.InfoContext(ctx, "updating known fixture")
-			err := m.DB.Model(&fixtureRecord).Updates(&fixture).Error
-			if err != nil {
-				return FixtureCategories{}, err
-			}
-		}
-	}
-	return fixtureCategories, nil
 }
 
 func (m *MatchCommand) getNewEvents(ctx context.Context, rapidClient *client.RapidClientImpl, fixtureId int) ([]client.EventInfo, error) {
