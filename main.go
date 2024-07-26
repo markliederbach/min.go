@@ -54,7 +54,6 @@ func main() {
 		},
 		Usage: "Retrieve updates from Forward Madison FC matches and publish to the Fediverse",
 		Commands: []*cli.Command{
-			command.NewMatchCommand(db).ToCliCommand(),
 			command.NewRefreshThreadsTokenCommand().ToCliCommand(),
 			command.NewFixtureSyncerCommand(db).ToCliCommand(),
 			command.NewMatchNotifyCommand().ToCliCommand(),
